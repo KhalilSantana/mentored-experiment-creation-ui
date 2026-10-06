@@ -1,0 +1,222 @@
+/**
+ * CustomNode styling
+ */
+
+.custom-node {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 160px;
+  max-width: 260px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.custom-node.selected {
+  border-color: #667eea;
+  background: #f0f4ff;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.custom-node-router {
+  border-color: #ed8936;
+  background: #fffaf0;
+}
+
+.custom-node-router.selected {
+  border-color: #ed8936;
+  background: #fff5e6;
+}
+
+.custom-node-client {
+  border-color: #48bb78;
+  background: #f0fdf4;
+}
+
+.custom-node-client.selected {
+  border-color: #48bb78;
+  background: #f0fdf4;
+}
+
+.custom-node-server {
+  border-color: #4299e1;
+  background: #eff6ff;
+}
+
+.custom-node-server.selected {
+  border-color: #4299e1;
+  background: #e0f2fe;
+}
+
+.custom-node-dns {
+  border-color: #9f7aea;
+  background: #faf5ff;
+}
+
+.custom-node-dns.selected {
+  border-color: #9f7aea;
+  background: #faf5ff;
+}
+
+.custom-node-generic {
+  border-color: #718096;
+  background: #f7fafc;
+}
+
+.custom-node-generic.selected {
+  border-color: #718096;
+  background: #edf2f7;
+}
+
+.node-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.node-icon {
+  font-size: 1.5rem;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  word-break: break-word;
+}
+
+.node-label strong {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.node-label .replicas {
+  font-size: 0.75rem;
+  color: #667eea;
+  font-weight: 600;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 2px 4px;
+  border-radius: 3px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.node-label .region {
+  font-size: 0.7rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Handle styling */
+.react-flow__handle {
+  background: #667eea;
+  border: 2px solid white;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.react-flow__handle.connectable {
+  cursor: crosshair;
+}
+
+.react-flow__handle.connecting {
+  background: #f56565;
+}
+
+.handle-in {
+  top: -5px !important;
+}
+
+.handle-out {
+  bottom: -5px !important;
+}
+
+/* Bridges */
+.bridge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #cbd5e0;
+}
+
+.bridge-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 4px;
+}
+
+.bridge-name {
+  flex: 1;
+  min-width: 0;
+  width: 70px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.bridge-name:focus {
+  border-color: #667eea;
+  background: white;
+  outline: none;
+}
+
+.bridge-name.invalid {
+  border-color: #f56565;
+}
+
+.bridge-ip {
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: #667eea;
+  white-space: nowrap;
+}
+
+.bridge-remove {
+  border: none;
+  background: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0 2px;
+}
+
+.bridge-remove:hover {
+  color: #f56565;
+}
+
+.bridge-add {
+  align-self: flex-start;
+  border: 1px dashed #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+
+.bridge-add:hover {
+  background: #f0f4ff;
+}
+
+.bridge-handle {
+  background: #ed8936;
+}

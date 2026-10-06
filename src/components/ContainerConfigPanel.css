@@ -1,0 +1,256 @@
+/**
+ * ContainerConfigPanel styling
+ */
+
+.container-config-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+  margin-bottom: 1rem;
+}
+
+.container-config-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #667eea;
+}
+
+.container-config-panel .panel-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.container-config-panel .btn-remove {
+  background: #f56565;
+  color: white;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container-config-panel .btn-remove:hover {
+  background: #e53e3e;
+}
+
+.container-config-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.container-config-panel .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.container-config-panel label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.container-config-panel input,
+.container-config-panel textarea,
+.container-config-panel select {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.container-config-panel input:focus,
+.container-config-panel textarea:focus,
+.container-config-panel select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.container-config-panel .hint-text {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.container-config-panel .section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.container-config-panel .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.container-config-panel .section-header h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.container-config-panel .empty-state {
+  margin: 0;
+  padding: 0.75rem;
+  background: white;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #999;
+  text-align: center;
+}
+
+/* Ports List */
+.container-config-panel .ports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.container-config-panel .port-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.container-config-panel .port-number {
+  font-weight: 600;
+  color: #667eea;
+  min-width: 50px;
+}
+
+.container-config-panel .port-name {
+  flex: 1;
+  color: #999;
+  font-size: 0.8rem;
+}
+
+.container-config-panel .add-port {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.container-config-panel .add-port input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Environment Variables List */
+.container-config-panel .env-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.container-config-panel .env-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.container-config-panel .env-key {
+  font-weight: 600;
+  color: #667eea;
+  min-width: 120px;
+}
+
+.container-config-panel .env-value {
+  flex: 1;
+  color: #666;
+  word-break: break-word;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.container-config-panel .add-env {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.container-config-panel .add-env input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Buttons */
+.container-config-panel .btn-add-item,
+.container-config-panel .btn-remove-item {
+  padding: 0.4rem 0.8rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.container-config-panel .btn-add-item:hover {
+  background: #5568d3;
+}
+
+.container-config-panel .btn-remove-item {
+  background: #e53e3e;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.container-config-panel .btn-remove-item:hover {
+  background: #c53030;
+}
+
+@media (max-width: 768px) {
+  .container-config-panel .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .container-config-panel .add-port,
+  .container-config-panel .add-env {
+    flex-direction: column;
+  }
+
+  .container-config-panel .add-port input,
+  .container-config-panel .add-env input {
+    width: 100%;
+  }
+
+  .container-config-panel .btn-add-item {
+    width: 100%;
+  }
+}

@@ -1,0 +1,134 @@
+/**
+ * NodeActorPanel styling
+ */
+
+.node-actor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.node-actor-panel .panel-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.75rem;
+}
+
+.node-actor-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.node-actor-panel label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.node-actor-panel input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.node-actor-panel input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.node-actor-panel input.input-error {
+  border-color: #f56565;
+  background-color: #fff5f5;
+}
+
+.node-actor-panel input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1);
+}
+
+.node-actor-panel .hint-text {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.node-actor-panel .error-text {
+  font-size: 0.8rem;
+  color: #f56565;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.node-actor-panel .section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.node-actor-panel .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.node-actor-panel .section-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.node-actor-panel .btn-add-container {
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.node-actor-panel .btn-add-container:hover {
+  background: #5568d3;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.node-actor-panel .btn-add-container:active {
+  transform: scale(0.98);
+}
+
+.node-actor-panel .empty-state {
+  margin: 1rem 0 0 0;
+  padding: 1rem;
+  background: #f9f9f9;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #999;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .node-actor-panel {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+
+  .node-actor-panel .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .node-actor-panel .btn-add-container {
+    width: 100%;
+  }
+}

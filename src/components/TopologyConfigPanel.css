@@ -1,0 +1,223 @@
+/**
+ * TopologyConfigPanel styling
+ */
+
+.topology-config-panel {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.topology-config-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.topology-config-panel .toggle-btn {
+  flex: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s;
+}
+
+.topology-config-panel .toggle-btn:hover {
+  color: #667eea;
+}
+
+.topology-config-panel .status-badge {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.topology-config-panel .status-valid {
+  color: #48bb78;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.topology-config-panel .status-invalid {
+  color: #f56565;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.topology-config-panel .panel-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.topology-config-panel .info-section h4,
+.topology-config-panel .json-section h4,
+.topology-config-panel .warning-section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 600;
+}
+
+/* Summary */
+.topology-config-panel .summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.topology-config-panel .summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.topology-config-panel .summary-item .label {
+  font-weight: 600;
+  color: #555;
+}
+
+.topology-config-panel .summary-item .value {
+  font-family: monospace;
+  color: #667eea;
+  font-weight: 600;
+}
+
+/* JSON Section */
+.topology-config-panel .json-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.topology-config-panel .json-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topology-config-panel .btn-copy {
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.topology-config-panel .btn-copy:hover {
+  background: #5568d3;
+}
+
+.topology-config-panel .btn-copy:active {
+  transform: scale(0.98);
+}
+
+.topology-config-panel .json-content {
+  background: #f0f0f0;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  overflow-x: auto;
+  max-height: 300px;
+  color: #333;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.topology-config-panel .hint-text {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Warning Section */
+.topology-config-panel .warning-section {
+  padding: 1rem;
+  background: #fffaf0;
+  border-left: 3px solid #f6ad55;
+  border-radius: 6px;
+}
+
+.topology-config-panel .warning-section p {
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+  color: #744210;
+}
+
+.topology-config-panel .warning-section p:first-child {
+  margin-top: 0;
+}
+
+/* Scrollbar */
+.topology-config-panel .panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.topology-config-panel .panel-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.topology-config-panel .panel-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.topology-config-panel .panel-content::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+@media (max-width: 768px) {
+  .topology-config-panel .summary {
+    grid-template-columns: 1fr;
+  }
+
+  .topology-config-panel .json-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topology-config-panel .btn-copy {
+    width: 100%;
+  }
+
+  .topology-config-panel .json-content {
+    font-size: 0.7rem;
+  }
+}
+
+.topology-config-panel .node-select {
+  margin-left: 0.5rem;
+  padding: 2px 6px;
+  font-family: monospace;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+}

@@ -1,0 +1,155 @@
+/**
+ * ScriptEditor styling
+ */
+
+.script-editor {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.script-editor .script-header {
+  padding: 0.75rem 1rem;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.script-editor .script-title-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.script-editor .btn-expand-script {
+  flex: 1;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.script-editor .btn-expand-script:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.script-editor .script-type-select {
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #667eea;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.script-editor .script-type-select:hover:not(:disabled) {
+  border-color: #667eea;
+}
+
+.script-editor .script-type-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.script-editor .script-type-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content area */
+.script-editor .script-content {
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.script-editor .script-code-textarea {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  color: #333;
+  resize: vertical;
+  min-height: 150px;
+  max-height: 400px;
+  tab-size: 2;
+  -moz-tab-size: 2;
+  transition: all 0.2s;
+}
+
+.script-editor .script-code-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.script-editor .script-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.script-editor .script-lines {
+  font-size: 0.75rem;
+  color: #999;
+  font-family: monospace;
+}
+
+.script-editor .btn-remove-script {
+  padding: 0.4rem 0.75rem;
+  background: #f56565;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.script-editor .btn-remove-script:hover {
+  background: #e53e3e;
+}
+
+.script-editor .btn-remove-script:active {
+  transform: scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .script-editor .script-code-textarea {
+    font-size: 0.8rem;
+    min-height: 120px;
+  }
+
+  .script-editor .script-title-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .script-editor .script-type-select {
+    width: 100%;
+  }
+}

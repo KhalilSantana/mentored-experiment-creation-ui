@@ -1,0 +1,175 @@
+/**
+ * ScriptPanel styling
+ */
+
+.script-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.script-panel .panel-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.75rem;
+}
+
+.script-panel .empty-state {
+  margin: 0;
+  padding: 1rem;
+  background: #f9f9f9;
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #999;
+  text-align: center;
+}
+
+.script-panel .scripts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.script-panel .script-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.script-panel .script-item:hover {
+  background: #fff;
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.script-panel .script-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.script-panel .script-name {
+  font-weight: 600;
+  color: #667eea;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.script-panel .script-desc {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.script-panel .btn-remove-script {
+  background: #f56565;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.script-panel .btn-remove-script:hover {
+  background: #e53e3e;
+}
+
+.script-panel .section {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+}
+
+.script-panel .section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.script-panel .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.script-panel label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.script-panel input,
+.script-panel textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.script-panel input:focus,
+.script-panel textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.script-panel .hint-text {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.script-panel .btn-add-script {
+  padding: 0.6rem 1.2rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-start;
+}
+
+.script-panel .btn-add-script:hover {
+  background: #5568d3;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.script-panel .btn-add-script:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .script-panel {
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+
+  .script-panel .btn-add-script {
+    width: 100%;
+    align-self: stretch;
+  }
+}
