@@ -16,6 +16,7 @@ import ReactFlow, {
   NodeTypes,
   EdgeTypes,
   MarkerType,
+  ConnectionMode,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
@@ -287,7 +288,6 @@ export const TopologyCanvas: React.FC = () => {
           showInteractive={false}
           showZoom={true}
           showFitView={true}
-          showMask={false}
         />
       </ReactFlow>
 
