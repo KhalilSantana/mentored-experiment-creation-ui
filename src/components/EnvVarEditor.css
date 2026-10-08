@@ -137,3 +137,30 @@
     padding: 0.4rem 0.6rem;
   }
 }
+
+.env-name-input,
+.env-value-input {
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  padding: 6px 8px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 30px;
+}
+
+.env-name-input {
+  min-height: 28px;
+}
+
+.env-value-input {
+  min-height: 60px;
+}
+
+.env-name-input:focus,
+.env-value-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}

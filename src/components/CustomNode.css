@@ -1,22 +1,26 @@
 /**
- * CustomNode styling
+ * CustomNode styling - with handles on left and right sides
  */
 
 .custom-node {
   background: white;
   border: 2px solid #ddd;
-  border-radius: 8px;
-  padding: 12px;
-  min-width: 160px;
-  max-width: 260px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  min-width: 180px;
+  max-width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
 }
 
 .custom-node.selected {
   border-color: #667eea;
   background: #f0f4ff;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.custom-node:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .custom-node-router {
@@ -72,13 +76,14 @@
 .node-content {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   text-align: left;
+  margin-bottom: 12px;
 }
 
 .node-icon {
-  font-size: 1.5rem;
-  min-width: 24px;
+  font-size: 1.6rem;
+  min-width: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,9 +98,9 @@
 }
 
 .node-label strong {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: #2d3748;
 }
 
 .node-label .replicas {
@@ -103,41 +108,57 @@
   color: #667eea;
   font-weight: 600;
   background: rgba(102, 126, 234, 0.1);
-  padding: 2px 4px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
   display: inline-block;
   width: fit-content;
 }
 
 .node-label .region {
   font-size: 0.7rem;
-  color: #999;
+  color: #a0aec0;
   font-style: italic;
 }
 
-/* Handle styling */
-.react-flow__handle {
-  background: #667eea;
-  border: 2px solid white;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+/* Connection handles on left and right */
+.node-handle {
+  background: #667eea !important;
+  border: 2px solid white !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+  transition: all 0.2s ease !important;
 }
 
-.react-flow__handle.connectable {
+.node-handle:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3) !important;
+}
+
+.node-handle-left {
+  left: -7px !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+.node-handle-left:hover {
+  transform: translateY(-50%) scale(1.3);
+}
+
+.node-handle-right {
+  right: -7px !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+.node-handle-right:hover {
+  transform: translateY(-50%) scale(1.3);
+}
+
+.node-handle.source-connectable,
+.node-handle.target-connectable {
   cursor: crosshair;
-}
-
-.react-flow__handle.connecting {
-  background: #f56565;
-}
-
-.handle-in {
-  top: -5px !important;
-}
-
-.handle-out {
-  bottom: -5px !important;
 }
 
 /* Bridges */
@@ -145,9 +166,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px dashed #cbd5e0;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
 }
 
 .bridge-row {
@@ -155,9 +176,10 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 4px;
-  background: rgba(102, 126, 234, 0.08);
-  border-radius: 4px;
+  padding: 3px 6px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 6px;
+  font-size: 0.75rem;
 }
 
 .bridge-name {
@@ -168,8 +190,8 @@
   font-size: 0.75rem;
   border: 1px solid transparent;
   background: transparent;
-  padding: 2px 4px;
-  border-radius: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .bridge-name:focus {
@@ -192,10 +214,11 @@
 .bridge-remove {
   border: none;
   background: none;
-  color: #a0aec0;
+  color: #cbd5e0;
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   padding: 0 2px;
+  line-height: 1;
 }
 
 .bridge-remove:hover {
@@ -204,19 +227,17 @@
 
 .bridge-add {
   align-self: flex-start;
-  border: 1px dashed #667eea;
+  border: 1px dashed #cbd5e0;
   background: white;
   color: #667eea;
   border-radius: 4px;
   font-size: 0.7rem;
   padding: 2px 8px;
   cursor: pointer;
+  margin-top: 2px;
 }
 
 .bridge-add:hover {
   background: #f0f4ff;
-}
-
-.bridge-handle {
-  background: #ed8936;
+  border-color: #667eea;
 }

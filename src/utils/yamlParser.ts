@@ -3,7 +3,7 @@
  */
 
 import YAML from 'js-yaml';
-import { Experiment, TopologyConfig } from '../types/experiment';
+import { Experiment, TopologyConfig, Route } from '../types/experiment';
 
 /**
  * Parses YAML string to Experiment object
@@ -48,6 +48,19 @@ export const extractTopologyConfig = (
     console.error('Failed to parse MENTORED_TOPOLOGY_CONFIG:', error);
     return null;
   }
+};
+
+/**
+ * Extracts routes from MENTORED_TOPOLOGY_CONFIG for use in node.routes
+ */
+export const extractRoutes = (
+  envVars?: Array<{ name: string; value: string }>
+): Route[] => {
+  const config = extractTopologyConfig(envVars);
+  if (!config?.routes) {
+    return [];
+  }
+  return config.routes;
 };
 
 /**

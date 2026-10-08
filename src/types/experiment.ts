@@ -71,6 +71,7 @@ export interface NodeActor {
   preview_logs?: boolean;
   exposed_web_services?: ExposedWebService[];
   bridges?: UIBridge[]; // UI-only: layer 2 connection points, stripped on export
+  routes?: Route[]; // UI-only: static routes for this node, included in MENTORED_TOPOLOGY_CONFIG
 }
 
 export interface Bridge {

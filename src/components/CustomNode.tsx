@@ -1,5 +1,6 @@
 /**
- * Custom node component for topology
+ * Custom node component for topology - with connection handles on left and right
+ * to allow intuitive edge placement from any side.
  */
 
 import React, { useContext, useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ export interface CustomNodeData {
   region?: string;
   bridges?: UIBridge[];
   bridgeIPs?: Record<string, string>;
+  handleCount?: number;
 }
 
 interface BridgeRowProps {
@@ -54,13 +56,6 @@ const BridgeRow: React.FC<BridgeRowProps> = ({ bridge, ip, siblingNames, onRenam
       <button className="bridge-remove nodrag" onClick={onRemove} title="Delete bridge">
         ✕
       </button>
-      <Handle
-        id={bridge.id}
-        type="source"
-        position={Position.Right}
-        className="bridge-handle"
-        style={{ right: -19 }}
-      />
     </div>
   );
 };
@@ -70,14 +65,22 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ id, data, sele
   const updateNodeInternals = useUpdateNodeInternals();
   const nodeType = data.nodeType || 'generic';
   const bridges = data.bridges || [];
-  const bridgeKey = bridges.map(b => b.id).join(',');
 
   useEffect(() => {
     updateNodeInternals(id);
-  }, [id, bridgeKey, updateNodeInternals]);
+  }, [id, bridges.length, updateNodeInternals]);
 
   return (
     <div className={`custom-node custom-node-${nodeType} ${selected ? 'selected' : ''}`}>
+      {/* Input handle on left - accept connections */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="node-handle node-handle-left"
+        id="default-left"
+        isConnectable
+      />
+
       <div className="node-content">
         <div className="node-icon">
           {nodeType === 'router' && '🔀'}
@@ -109,6 +112,15 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ id, data, sele
           + bridge
         </button>
       </div>
+
+      {/* Output handle on right - create connections */}
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="node-handle node-handle-right"
+        id="default-right"
+        isConnectable
+      />
     </div>
   );
 };

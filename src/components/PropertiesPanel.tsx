@@ -11,6 +11,7 @@ import { validateSubnet } from '../utils/validators';
 import NodeActorPanel from './NodeActorPanel';
 import ContainerConfigPanel from './ContainerConfigPanel';
 import ScriptPanel from './ScriptPanel';
+import { RouteEditor } from './RouteEditor';
 import './PropertiesPanel.css';
 
 interface BridgeEditorProps {
@@ -80,6 +81,9 @@ export const PropertiesPanel: React.FC = () => {
     updateBridge,
     removeBridge,
     removeVXLANEdge,
+    addRoute,
+    updateRoute,
+    removeRoute,
     setSelectedEdge,
   } = context;
 
@@ -162,6 +166,16 @@ export const PropertiesPanel: React.FC = () => {
           + bridge
         </button>
       </div>
+
+      {/* Routes */}
+      {selectedNode && (
+        <RouteEditor
+          routes={selectedNode.routes || []}
+          onAddRoute={(route) => addRoute(selectedNode.name, route)}
+          onUpdateRoute={(index, route) => updateRoute(selectedNode.name, index, route)}
+          onRemoveRoute={(index) => removeRoute(selectedNode.name, index)}
+        />
+      )}
 
       {/* Containers */}
       <div className="containers-section">

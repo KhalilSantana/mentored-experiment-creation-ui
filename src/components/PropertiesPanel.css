@@ -213,3 +213,15 @@
   border-color: #f56565;
   color: #f56565;
 }
+
+/* Routes section */
+.properties-panel .routes-section {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.properties-panel .routes-section h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: #333;
+}

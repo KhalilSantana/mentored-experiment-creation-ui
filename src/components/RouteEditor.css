@@ -1,0 +1,150 @@
+/**
+ * RouteEditor styling
+ */
+
+.route-editor {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.route-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.route-editor-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.btn-add-route {
+  border: 1px dashed #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.btn-add-route:hover {
+  background: #f0f4ff;
+}
+
+.routes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.route-item {
+  padding: 0.75rem;
+  background: #f7f9ff;
+  border: 1px solid #e0e6ff;
+  border-radius: 6px;
+}
+
+.route-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.route-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.btn-remove-route {
+  border: none;
+  background: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+}
+
+.btn-remove-route:hover {
+  color: #f56565;
+}
+
+.route-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.checkbox-label input[type='checkbox'] {
+  width: auto;
+  cursor: pointer;
+}
+
+.route-preview {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e0e6ff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.preview-command {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: #667eea;
+  background: white;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #e0e6ff;
+  word-break: break-all;
+}
+
+.empty-state {
+  color: #999;
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .route-editor {
+    padding: 0.75rem 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

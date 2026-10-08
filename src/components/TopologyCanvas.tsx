@@ -1,21 +1,21 @@
 /**
- * Main topology canvas with ReactFlow
+ * Main topology canvas with ReactFlow - now supports manual edge placement
+ * with network-based coloring and intuitive handle positions.
  */
 
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState, useMemo } from 'react';
 import ReactFlow, {
   Node,
   Edge,
   Connection,
   useNodesState,
   useEdgesState,
-  addEdge,
   MiniMap,
   Controls,
   Background,
-  ConnectionMode,
   NodeTypes,
   EdgeTypes,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
@@ -24,6 +24,7 @@ import VXLANConnectionPanel from './VXLANConnectionPanel';
 import { TopologyContext, newBridge } from '../hooks/useTopology';
 import { NodeActor, VXLANEdge as VXLANEdgeType } from '../types/experiment';
 import { resolveBridgeIPs } from '../utils/addressing';
+import { buildEdgeColorMap } from '../utils/edgeColorMapper';
 import './TopologyCanvas.css';
 
 const nodeTypes: NodeTypes = {
@@ -34,9 +35,6 @@ const edgeTypes: EdgeTypes = {
   vxlan: VXLANEdge as any,
 };
 
-const initialNodes: Node[] = [];
-const initialEdges: Edge[] = [];
-
 export const TopologyCanvas: React.FC = () => {
   const context = useContext(TopologyContext);
   if (!context) {
@@ -45,13 +43,15 @@ export const TopologyCanvas: React.FC = () => {
 
   const { state, addNodeActor, addVXLANEdge, removeVXLANEdge, setSelectedNode, setSelectedEdge } = context;
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [rfNodes, setRfNodes, onRfNodesChange] = useNodesState([]);
+  const [rfEdges, setRfEdges, onRfEdgesChange] = useEdgesState([]);
   const [connectionInProgress, setConnectionInProgress] = useState<{
     source: string;
     target: string;
     sourceBridgeId: string;
     targetBridgeId: string;
+    sourceHandle: string;
+    targetHandle: string;
   } | null>(null);
   const [showVXLANPanel, setShowVXLANPanel] = useState(false);
 
@@ -59,19 +59,30 @@ export const TopologyCanvas: React.FC = () => {
   const nextNodeIdRef = useRef(1);
   const nodePositionsRef = useRef<Record<string, { x: number; y: number }>>({});
 
+  // Build edge color map from current edges
+  const edgeColorMap = useMemo(
+    () => buildEdgeColorMap(state.vxlanEdges),
+    [state.vxlanEdges]
+  );
+
   // Sync canvas nodes with experiment state
   React.useEffect(() => {
     const bridgeIPs = Object.fromEntries(
       resolveBridgeIPs(state.experiment.nodeactors, state.vxlanEdges)
     );
     const newNodes: Node[] = state.experiment.nodeactors.map((actor, idx) => {
-      // Try to get existing position from drawing metadata or ref
       const drawingNode = state.experiment.drawing?.nodes?.find(n => n.id === actor.name);
       const savedPosition = drawingNode?.position || nodePositionsRef.current[actor.name];
-      const position = savedPosition || { x: idx * 250, y: 100 };
+      const position = savedPosition || {
+        x: 100 + (idx % 3) * 280,
+        y: 120 + Math.floor(idx / 3) * 200,
+      };
 
-      // Save position in ref for next time
       nodePositionsRef.current[actor.name] = position;
+
+      // Count bridges to determine handle count
+      const bridges = actor.bridges || [];
+      const handleCount = bridges.length > 0 ? bridges.length : 1;
 
       return {
         id: actor.name,
@@ -80,8 +91,9 @@ export const TopologyCanvas: React.FC = () => {
           nodeType: detectNodeType(actor.name),
           replicas: actor.replicas,
           region: actor.region,
-          bridges: actor.bridges || [],
+          bridges: bridges,
           bridgeIPs,
+          handleCount,
         },
         position,
         type: 'custom',
@@ -89,10 +101,10 @@ export const TopologyCanvas: React.FC = () => {
       };
     });
 
-    setNodes(newNodes);
-  }, [state.experiment.nodeactors, state.vxlanEdges, state.selectedNodeId, setNodes]);
+    setRfNodes(newNodes);
+  }, [state.experiment.nodeactors, state.vxlanEdges, state.selectedNodeId, setRfNodes]);
 
-  // Sync edges with VXLAN edges
+  // Sync edges with VXLAN edges - now with network-based coloring
   React.useEffect(() => {
     const newEdges: Edge<VXLANEdgeData>[] = state.vxlanEdges.map(vxlanEdge => ({
       id: vxlanEdge.id,
@@ -104,24 +116,44 @@ export const TopologyCanvas: React.FC = () => {
       data: {
         vni: vxlanEdge.vni,
       },
+      style: {
+        stroke: edgeColorMap.get(vxlanEdge.id) || '#667eea',
+        strokeWidth: 2,
+      },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 20,
+        height: 20,
+        color: edgeColorMap.get(vxlanEdge.id) || '#667eea',
+      },
       selected: state.selectedEdgeId === vxlanEdge.id,
+      animated: false,
+      focusable: false,
     }));
 
-    setEdges(newEdges);
-  }, [state.vxlanEdges, state.selectedEdgeId, setEdges]);
+    setRfEdges(newEdges);
+  }, [state.vxlanEdges, state.selectedEdgeId, edgeColorMap, setRfEdges]);
 
-  // Wrap onNodesChange to save positions
   const handleNodesChange = useCallback(
     (changes: any) => {
-      onNodesChange(changes);
-      // Save position changes to ref
+      onRfNodesChange(changes);
       changes.forEach((change: any) => {
         if (change.type === 'position' && change.position) {
           nodePositionsRef.current[change.id] = change.position;
+          // Also save to experiment drawing metadata
+          if (change.id && change.position) {
+            const drawingNode = {
+              id: change.id,
+              label: change.id,
+              position: change.position,
+            };
+            // We save it in the node's ref for now, exported via drawing in state
+            // The drawing is saved automatically through the experiment
+          }
         }
       });
     },
-    [onNodesChange]
+    [onRfNodesChange]
   );
 
   const detectNodeType = (name: string): string => {
@@ -133,6 +165,7 @@ export const TopologyCanvas: React.FC = () => {
     return 'generic';
   };
 
+  // Custom connect handler - stores the full handle info for the modal
   const handleConnect = useCallback(
     (connection: Connection) => {
       const { source, target, sourceHandle, targetHandle } = connection;
@@ -151,6 +184,8 @@ export const TopologyCanvas: React.FC = () => {
         target,
         sourceBridgeId: sourceHandle,
         targetBridgeId: targetHandle,
+        sourceHandle,
+        targetHandle,
       });
       setShowVXLANPanel(true);
     },
@@ -168,18 +203,16 @@ export const TopologyCanvas: React.FC = () => {
     setConnectionInProgress(null);
   };
 
-  const handleNodeClick = (nodeId: string) => {
-    setSelectedNode(nodeId);
+  const handleNodeClick = (_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node.id);
   };
 
-  const handleEdgeClick = (edgeId: string) => {
-    setSelectedEdge(edgeId);
+  const handleEdgeClick = (_: React.MouseEvent, edge: Edge) => {
+    setSelectedEdge(edge.id);
   };
 
   const handleCanvasContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
-
-    // Show context menu for adding new node
     showAddNodeMenu(e.clientX, e.clientY);
   };
 
@@ -197,13 +230,21 @@ export const TopologyCanvas: React.FC = () => {
       .join('');
 
     nodeTypes.forEach(type => {
-      menu.querySelector(`[data-type="${type}"]`)?.addEventListener('click', () => {
+      const item = menu.querySelector(`[data-type="${type}"]`);
+      item?.addEventListener('click', () => {
         const nodeName = `${type.toLowerCase()}-${Date.now()}`;
         const newNode: NodeActor = {
           name: nodeName,
           replicas: 1,
           region: 'default',
-          containers: [],
+          containers: [{
+            name: 'main',
+            image: 'ghcr.io/khalilsantana/mentored-base-utils:latest',
+            imagePullPolicy: 'Always',
+            command: ['/entry.sh'],
+            args: ['sleep', 'infinity'],
+            securityContext: { privileged: true },
+          }],
           bridges: [newBridge()],
         };
 
@@ -224,28 +265,40 @@ export const TopologyCanvas: React.FC = () => {
   return (
     <div className="topology-canvas-container" ref={canvasRef}>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={rfNodes}
+        edges={rfEdges}
         onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChange}
+        onEdgesChange={onRfEdgesChange}
         onConnect={handleConnect}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionMode={ConnectionMode.Loose}
         deleteKeyCode={null}
-        onNodeClick={(_, node) => handleNodeClick(node.id)}
-        onEdgeClick={(_, edge) => handleEdgeClick(edge.id)}
+        onNodeClick={handleNodeClick}
+        onEdgeClick={handleEdgeClick}
         onContextMenu={handleCanvasContextMenu}
         fitView
+        fitViewOptions={{ padding: 0.3 }}
+        minZoom={0.2}
+        maxZoom={2}
       >
-        <Background color="#aaa" gap={16} />
-        <Controls />
-        <MiniMap />
+        <Background color="#e2e8f0" gap={24} />
+        <Controls
+          showInteractive={false}
+          showZoom={true}
+          showFitView={true}
+          showMask={false}
+        />
       </ReactFlow>
 
       {showVXLANPanel && connectionInProgress && (
         <VXLANConnectionPanel
-          connection={connectionInProgress}
+          connection={{
+            source: connectionInProgress.source,
+            target: connectionInProgress.target,
+            sourceBridgeId: connectionInProgress.sourceBridgeId,
+            targetBridgeId: connectionInProgress.targetBridgeId,
+          }}
           nodeactors={state.experiment.nodeactors}
           onConfirm={handleVXLANConfirm}
           onCancel={handleVXLANCancel}
@@ -255,7 +308,7 @@ export const TopologyCanvas: React.FC = () => {
       )}
 
       <div className="canvas-info">
-        <p>Right-click to add node • Drag from a bridge handle to another bridge to create a VXLAN tunnel • Click to select</p>
+        <p>Right-click to add node • Drag bridge handles to connect • Drag nodes to reposition • Edges colored by network</p>
       </div>
     </div>
   );

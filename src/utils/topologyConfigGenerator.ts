@@ -46,6 +46,19 @@ export const generateNodeTopologyConfig = (
   const config: TopologyConfig = { cluster_pod_cidr: DEFAULT_CLUSTER_POD_CIDR };
   if (bridges.length > 0) config.bridges = bridges;
   if (interfaces.length > 0) config.interfaces = interfaces;
+
+  // Collect routes from the node's routes array
+  const nodeRoutes = node.routes || [];
+  if (nodeRoutes.length > 0) {
+    config.routes = nodeRoutes.map(r => ({
+      to: r.to,
+      via: r.via,
+      dev: r.dev,
+      metric: r.metric,
+      onlink: r.onlink,
+    }));
+  }
+
   return config;
 };
 

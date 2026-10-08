@@ -3,7 +3,7 @@
  */
 
 import { useCallback, useState, createContext } from 'react';
-import { Experiment, NodeActor, VXLANEdge, UIState, Container, Script, UIBridge } from '../types/experiment';
+import { Experiment, NodeActor, VXLANEdge, UIState, Container, Script, UIBridge, Route } from '../types/experiment';
 
 interface TopologyContextType {
   state: UIState;
@@ -16,6 +16,9 @@ interface TopologyContextType {
   addVXLANEdge: (edge: VXLANEdge) => void;
   updateVXLANEdge: (edgeId: string, updates: Partial<VXLANEdge>) => void;
   removeVXLANEdge: (edgeId: string) => void;
+  addRoute: (nodeId: string, route: Route) => void;
+  updateRoute: (nodeId: string, routeIndex: number, route: Route) => void;
+  removeRoute: (nodeId: string, routeIndex: number) => void;
   updateContainerInNode: (nodeId: string, containerIndex: number, container: Container) => void;
   removeContainerFromNode: (nodeId: string, containerIndex: number) => void;
   addScript: (script: Script) => void;
@@ -210,6 +213,53 @@ export const useTopology = () => {
     }));
   }, []);
 
+
+  const addRoute = useCallback((nodeId: string, route: Route) => {
+    setState(prev => ({
+      ...prev,
+      experiment: {
+        ...prev.experiment,
+        nodeactors: prev.experiment.nodeactors.map(n => {
+          if (n.name !== nodeId) return n;
+          const routes = n.routes || [];
+          return { ...n, routes: [...routes, route] };
+        }),
+      },
+    }));
+  }, []);
+
+  const updateRoute = useCallback((nodeId: string, routeIndex: number, route: Route) => {
+    setState(prev => ({
+      ...prev,
+      experiment: {
+        ...prev.experiment,
+        nodeactors: prev.experiment.nodeactors.map(n =>
+          n.name === nodeId
+            ? {
+                ...n,
+                routes: (n.routes || []).map((r, i) =>
+                  i === routeIndex ? route : r
+                ),
+              }
+            : n
+        ),
+      },
+    }));
+  }, []);
+
+  const removeRoute = useCallback((nodeId: string, routeIndex: number) => {
+    setState(prev => ({
+      ...prev,
+      experiment: {
+        ...prev.experiment,
+        nodeactors: prev.experiment.nodeactors.map(n =>
+          n.name === nodeId
+            ? { ...n, routes: (n.routes || []).filter((_, i) => i !== routeIndex) }
+            : n
+        ),
+      },
+    }));
+  }, []);
   const updateContainerInNode = useCallback(
     (nodeId: string, containerIndex: number, container: Container) => {
       setState(prev => ({
@@ -326,6 +376,9 @@ export const useTopology = () => {
     addVXLANEdge,
     updateVXLANEdge,
     removeVXLANEdge,
+    addRoute,
+    updateRoute,
+    removeRoute,
     updateContainerInNode,
     removeContainerFromNode,
     addScript,

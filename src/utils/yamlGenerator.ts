@@ -24,7 +24,7 @@ const withTopologyEnv = (
   edges: VXLANEdge[],
   bridgeIPs: Map<string, string>
 ): Omit<NodeActor, 'bridges'> => {
-  const { bridges: _bridges, ...exported } = node;
+  const { bridges: _bridges, routes: _routes, ...exported } = node;
   const value = topologyConfigToJSON(generateNodeTopologyConfig(node, nodeactors, edges, bridgeIPs));
 
   const containers = node.containers && node.containers.length > 0

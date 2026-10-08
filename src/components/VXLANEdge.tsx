@@ -1,5 +1,5 @@
 /**
- * Custom VXLAN edge component
+ * Custom VXLAN edge component - respects network-based coloring passed via style
  */
 
 import React from 'react';
@@ -29,6 +29,7 @@ export const VXLANEdge: React.FC<EdgeProps<VXLANEdgeData>> = ({
   targetPosition,
   data,
   selected,
+  style,
 }) => {
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
@@ -39,14 +40,19 @@ export const VXLANEdge: React.FC<EdgeProps<VXLANEdgeData>> = ({
     targetPosition,
   });
 
+  // Determine stroke color - use style from props (set by edgeColorMapper) or fallback
+  const strokeColor = selected
+    ? '#764ba2'
+    : (style as any)?.stroke || '#667eea';
+
   return (
     <>
       <BaseEdge
         path={edgePath}
         style={{
           strokeWidth: selected ? 3 : 2,
-          stroke: selected ? '#764ba2' : '#667eea',
-          filter: selected ? 'drop-shadow(0 0 3px rgba(118, 75, 162, 0.5))' : 'none',
+          stroke: strokeColor,
+          filter: selected ? `drop-shadow(0 0 3px ${strokeColor}80)` : 'none',
         }}
       />
 
@@ -60,7 +66,9 @@ export const VXLANEdge: React.FC<EdgeProps<VXLANEdgeData>> = ({
           }}
         >
           {data?.vni !== undefined && (
-            <span className="vni-badge">VNI: {data.vni}</span>
+            <span className="vni-badge" style={{ background: strokeColor }}>
+              VNI: {data.vni}
+            </span>
           )}
           {data?.sourceIP && (
             <span className="ip-badge source">{data.sourceIP}</span>
