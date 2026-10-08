@@ -81,9 +81,8 @@ export const TopologyCanvas: React.FC = () => {
 
       nodePositionsRef.current[actor.name] = position;
 
-      // Count bridges to determine handle count
+      // Build bridge IP map for this node
       const bridges = actor.bridges || [];
-      const handleCount = bridges.length > 0 ? bridges.length : 1;
 
       return {
         id: actor.name,
@@ -94,7 +93,6 @@ export const TopologyCanvas: React.FC = () => {
           region: actor.region,
           bridges: bridges,
           bridgeIPs,
-          handleCount,
         },
         position,
         type: 'custom',

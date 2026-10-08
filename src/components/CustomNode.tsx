@@ -4,7 +4,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
-import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow';
+import { Handle, NodeProps, Position, useUpdateNodeInternals } from 'reactflow';
 import { TopologyContext } from '../hooks/useTopology';
 import { UIBridge } from '../types/experiment';
 import { validateBridgeName } from '../utils/topologyConfigGenerator';
@@ -17,7 +17,6 @@ export interface CustomNodeData {
   region?: string;
   bridges?: UIBridge[];
   bridgeIPs?: Record<string, string>;
-  handleCount?: number;
 }
 
 interface BridgeRowProps {
@@ -65,21 +64,52 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ id, data, sele
   const updateNodeInternals = useUpdateNodeInternals();
   const nodeType = data.nodeType || 'generic';
   const bridges = data.bridges || [];
+  const bridgeCount = bridges.length;
 
   useEffect(() => {
     updateNodeInternals(id);
-  }, [id, bridges.length, updateNodeInternals]);
+  }, [id, bridgeCount, updateNodeInternals]);
+
+  // Calculate vertical offset for each bridge's handles
+  // Positions handles relative to the bridge area (which starts below node content)
+  const getBridgeOffset = (index: number) => {
+    if (bridgeCount <= 1) return 15; // Slightly below center for single bridge (bridge area)
+    // Bridge area starts at ~115px from node top, each bridge row is ~30px tall
+    // Node center shifts down as more bridges are added
+    const nodeCenterY = 108 + (bridgeCount * 15); // approximate node center
+    const handleY = 115 + index * 30; // position of each bridge row from node top
+    return handleY - nodeCenterY;
+  };
 
   return (
     <div className={`custom-node custom-node-${nodeType} ${selected ? 'selected' : ''}`}>
-      {/* Input handle on left - accept connections */}
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="node-handle node-handle-left"
-        id="default-left"
-        isConnectable
-      />
+      {/* Render one handle pair per bridge, positioned alongside each bridge row */}
+      {bridges.map((bridge, index) => {
+        const offsetY = getBridgeOffset(index);
+        return (
+          <React.Fragment key={`handles-${bridge.id}`}>
+            {/* Input handle on left - accept connections for this bridge */}
+            <Handle
+              type="target"
+              position={Position.Left}
+              className={`node-handle node-handle-left bridge-handle-${index}`}
+              id={bridge.id}
+              isConnectable
+              style={{ transform: `translate(-50%, -50%) translateY(${offsetY}px)` }}
+            />
+
+            {/* Output handle on right - create connections from this bridge */}
+            <Handle
+              type="source"
+              position={Position.Right}
+              className={`node-handle node-handle-right bridge-handle-${index}`}
+              id={bridge.id}
+              isConnectable
+              style={{ transform: `translate(-50%, -50%) translateY(${offsetY}px)` }}
+            />
+          </React.Fragment>
+        );
+      })}
 
       <div className="node-content">
         <div className="node-icon">
@@ -112,15 +142,6 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ id, data, sele
           + bridge
         </button>
       </div>
-
-      {/* Output handle on right - create connections */}
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="node-handle node-handle-right"
-        id="default-right"
-        isConnectable
-      />
     </div>
   );
 };
