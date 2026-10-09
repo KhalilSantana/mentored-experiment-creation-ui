@@ -49,7 +49,7 @@ export const VXLANConnectionPanel: React.FC<VXLANConnectionPanelProps> = ({
     }
 
     onConfirm({
-      id: `edge-${connection.sourceBridgeId}-${connection.targetBridgeId}`,
+      id: `edge-${connection.source}-${connection.target}`,
       source: connection.source,
       target: connection.target,
       sourceBridgeId: connection.sourceBridgeId,

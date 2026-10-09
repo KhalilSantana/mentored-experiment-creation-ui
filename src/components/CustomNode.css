@@ -11,6 +11,7 @@
   max-width: 280px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
+  overflow: visible;
 }
 
 .custom-node.selected {
@@ -120,27 +121,6 @@
   font-style: italic;
 }
 
-/* Connection handle — one per bridge, type="default" makes it both source & target */
-.node-handle {
-  background: #667eea !important;
-  border: 2px solid white !important;
-  width: 14px !important;
-  height: 14px !important;
-  border-radius: 50% !important;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
-  transition: all 0.2s ease !important;
-}
-
-.node-handle:hover {
-  transform: scale(1.3) !important;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3) !important;
-}
-
-.node-handle.source-connectable,
-.node-handle.target-connectable {
-  cursor: crosshair;
-}
-
 /* Bridges */
 .bridge-list {
   display: flex;
@@ -160,6 +140,36 @@
   background: rgba(102, 126, 234, 0.05);
   border-radius: 6px;
   font-size: 0.75rem;
+}
+
+/* Connection wrapper — pushes stacked handles to the right edge, before the delete button */
+.bridge-handle-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 8px;
+  z-index: 1;
+}
+
+/* Connection dot — rendered inside each bridge row */
+.bridge-handle {
+  background: #667eea !important;
+  border: 2px solid white !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.bridge-handle:hover {
+  transform: scale(1.3) !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3) !important;
+}
+
+.bridge-handle.source-connectable,
+.bridge-handle.target-connectable {
+  cursor: crosshair;
 }
 
 .bridge-name {

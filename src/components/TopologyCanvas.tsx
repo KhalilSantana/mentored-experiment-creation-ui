@@ -105,12 +105,12 @@ export const TopologyCanvas: React.FC = () => {
 
   // Sync edges with VXLAN edges - now with network-based coloring
   React.useEffect(() => {
-    const newEdges: Edge<VXLANEdgeData>[] = state.vxlanEdges.map(vxlanEdge => ({
+    const newEdges: Edge<VXLANEdgeData>[] = state.vxlanEdges.map((vxlanEdge) => ({
       id: vxlanEdge.id,
       source: vxlanEdge.source,
       target: vxlanEdge.target,
-      sourceHandle: vxlanEdge.sourceBridgeId,
-      targetHandle: vxlanEdge.targetBridgeId,
+      sourceHandle: `source-${vxlanEdge.sourceBridgeId}`,
+      targetHandle: `target-${vxlanEdge.targetBridgeId}`,
       type: 'vxlan',
       data: {
         vni: vxlanEdge.vni,
@@ -164,28 +164,52 @@ export const TopologyCanvas: React.FC = () => {
     return 'generic';
   };
 
-  // Custom connect handler - stores the full handle info for the modal
+  // Custom connect handler — one handle per bridge, stacked source+target
   const handleConnect = useCallback(
     (connection: Connection) => {
       const { source, target, sourceHandle, targetHandle } = connection;
       if (!source || !target || !sourceHandle || !targetHandle) return;
       if (source === target) return;
 
+      // Extract bridge IDs from handle prefixes (source-{bridgeId}, target-{bridgeId})
+      const extractBridgeId = (handle: string) => handle.replace(/^(source|target)-/, '');
+      const sourceBridgeId = extractBridgeId(sourceHandle);
+      const targetBridgeId = extractBridgeId(targetHandle);
+
       const alreadyLinked = state.vxlanEdges.some(
-        e =>
-          (e.sourceBridgeId === sourceHandle && e.targetBridgeId === targetHandle) ||
-          (e.sourceBridgeId === targetHandle && e.targetBridgeId === sourceHandle)
+        (e) =>
+          (e.sourceBridgeId === sourceBridgeId && e.targetBridgeId === targetBridgeId) ||
+          (e.sourceBridgeId === targetBridgeId && e.targetBridgeId === sourceBridgeId)
       );
       if (alreadyLinked) return;
 
       setConnectionInProgress({
         source,
         target,
-        sourceBridgeId: sourceHandle,
-        targetBridgeId: targetHandle,
+        sourceBridgeId,
+        targetBridgeId,
         sourceHandle,
         targetHandle,
       });
+
+      // Immediately create a temporary visual edge so the user sees the
+      // connection forming while the modal is open.
+      setRfEdges((eds) => [
+        ...eds,
+        {
+          id: `pending-${sourceHandle}-${targetHandle}`,
+          source,
+          target,
+          sourceHandle,
+          targetHandle,
+          type: 'vxlan',
+          data: {},
+          style: { stroke: '#667eea', strokeDasharray: '8 4' },
+          animated: true,
+          focusable: false,
+        },
+      ]);
+
       setShowVXLANPanel(true);
     },
     [state.vxlanEdges]
@@ -194,7 +218,20 @@ export const TopologyCanvas: React.FC = () => {
   const handleVXLANConfirm = (edge: VXLANEdgeType) => {
     addVXLANEdge(edge);
     setShowVXLANPanel(false);
-    setConnectionInProgress(null);
+
+    // Remove the temporary dashed edge and let the edge-sync effect
+    // re-create it as a solid edge with correct handle IDs.
+    setConnectionInProgress((prev) => {
+      if (prev) {
+        setRfEdges((eds) =>
+          eds.filter(
+            (e) =>
+              e.id !== `pending-${prev.sourceHandle}-${prev.targetHandle}`
+          )
+        );
+      }
+      return null;
+    });
   };
 
   const handleVXLANCancel = () => {

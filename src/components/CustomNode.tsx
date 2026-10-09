@@ -52,6 +52,23 @@ const BridgeRow: React.FC<BridgeRowProps> = ({ bridge, ip, siblingNames, onRenam
         title="Bridge name"
       />
       {ip && <span className="bridge-ip">{ip}</span>}
+      {/* Connection handles — rendered inside the bridge row, at the right edge */}
+      <div className="bridge-handle-wrapper">
+        <Handle
+          type="source"
+          position={Position.Right}
+          id={`source-${bridge.id}`}
+          isConnectable
+          className="bridge-handle"
+        />
+        <Handle
+          type="target"
+          position={Position.Right}
+          id={`target-${bridge.id}`}
+          isConnectable
+          className="bridge-handle"
+        />
+      </div>
       <button className="bridge-remove nodrag" onClick={onRemove} title="Delete bridge">
         ✕
       </button>
@@ -64,40 +81,13 @@ export const CustomNode: React.FC<NodeProps<CustomNodeData>> = ({ id, data, sele
   const updateNodeInternals = useUpdateNodeInternals();
   const nodeType = data.nodeType || 'generic';
   const bridges = data.bridges || [];
-  const bridgeCount = bridges.length;
 
   useEffect(() => {
     updateNodeInternals(id);
-  }, [id, bridgeCount, updateNodeInternals]);
-
-  // Calculate vertical offset for each bridge's handle
-  // Positions handles relative to the bridge area (which starts below node content)
-  const getBridgeOffset = (index: number) => {
-    if (bridgeCount <= 1) return 15; // Slightly below center for single bridge
-    // Bridge area starts at ~115px from node top, each bridge row is ~30px tall
-    const nodeCenterY = 108 + (bridgeCount * 15);
-    const handleY = 115 + index * 30;
-    return handleY - nodeCenterY;
-  };
+  }, [id, updateNodeInternals]);
 
   return (
     <div className={`custom-node custom-node-${nodeType} ${selected ? 'selected' : ''}`}>
-      {/* One connection handle per bridge — "default" makes it both source & target */}
-      {bridges.map((bridge, index) => {
-        const offsetY = getBridgeOffset(index);
-        return (
-          <Handle
-            key={`handle-${bridge.id}`}
-            type={"default" as any}
-            position={Position.Right}
-            className="node-handle bridge-handle"
-            id={bridge.id}
-            isConnectable
-            style={{ transform: `translate(-50%, -50%) translateY(${offsetY}px)` }}
-          />
-        );
-      })}
-
       <div className="node-content">
         <div className="node-icon">
           {nodeType === 'router' && '🔀'}
