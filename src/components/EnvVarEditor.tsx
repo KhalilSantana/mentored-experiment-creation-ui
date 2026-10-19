@@ -35,7 +35,8 @@ export const EnvVarEditor: React.FC<EnvVarEditorProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    // Only prevent Enter for text inputs, not for textareas (where Enter = newline)
+    if (e.key === 'Enter' && e.currentTarget.tagName === 'INPUT') {
       e.preventDefault();
       handleAdd();
     }
@@ -56,8 +57,7 @@ export const EnvVarEditor: React.FC<EnvVarEditorProps> = ({
               className="env-var-name"
               disabled={editingIndex !== null && editingIndex !== idx}
             />
-            <input
-              type="text"
+            <textarea
               value={envVar.value}
               onChange={(e) =>
                 onUpdateEnvVar(idx, { ...envVar, value: e.target.value })
@@ -65,6 +65,7 @@ export const EnvVarEditor: React.FC<EnvVarEditorProps> = ({
               placeholder="value"
               className="env-var-value"
               disabled={editingIndex !== null && editingIndex !== idx}
+              rows={2}
             />
             <button
               className="btn-delete-env"
@@ -86,13 +87,13 @@ export const EnvVarEditor: React.FC<EnvVarEditorProps> = ({
           placeholder="VARIABLE_NAME"
           className="env-var-name"
         />
-        <input
-          type="text"
+        <textarea
           value={newValue}
           onChange={(e) => setNewValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="value"
           className="env-var-value"
+          rows={2}
         />
         <button className="btn-add-env" onClick={handleAdd}>
           Add

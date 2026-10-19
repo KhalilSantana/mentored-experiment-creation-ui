@@ -232,6 +232,11 @@ function App() {
             <TopologyCanvas />
           </main>
 
+          <div
+            className={`resize-handle-right ${state.isResizingRight ? 'active' : ''}`}
+            onMouseDown={handleMouseDownRight}
+          />
+
           <div className="app-sidebar-right-wrapper">
             <aside
               className="app-sidebar-right"
@@ -239,11 +244,6 @@ function App() {
             >
               <PropertiesPanel />
             </aside>
-
-            <div
-              className={`resize-handle-right ${state.isResizingRight ? 'active' : ''}`}
-              onMouseDown={handleMouseDownRight}
-            />
           </div>
         </div>
 
