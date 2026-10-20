@@ -28,6 +28,7 @@ interface TopologyContextType {
   setSelectedEdge: (edgeId?: string) => void;
   exportExperiment: () => Experiment;
   importExperiment: (exp: Experiment) => void;
+  importExperimentWithEdges: (exp: Experiment) => void;
   resetTopology: () => void;
 }
 
@@ -361,6 +362,170 @@ export const useTopology = () => {
     }));
   }, []);
 
+  /** Import an experiment and reconstruct VXLAN edges from MENTORED_TOPOLOGY_CONFIG. */
+  const importExperimentWithEdges = useCallback((exp: Experiment) => {
+    // 1. Set the experiment state
+    setState(prev => ({ ...prev, experiment: exp }));
+
+    // 2. Per-node data structures
+    type NodeBridges = Map<string, { stableId: string; name: string }>;
+    const nodeBridgesMap = new Map<string, NodeBridges>();
+    // remoteBridgeMap: nodeId → Map of remoteHost → bridgeName for each VNI interface
+    const remoteBridgeMap = new Map<string, Map<string, string>>();
+
+    for (const node of exp.nodeactors) {
+      const nodeBridgeMap = new Map<string, { stableId: string; name: string }>();
+      const nodeRemoteMap = new Map<string, string>();
+
+      for (const container of (node.containers || [])) {
+        const topoConfigVar = (container.env || []).find(e => e.name === 'MENTORED_TOPOLOGY_CONFIG');
+        if (!topoConfigVar) continue;
+        try {
+          const topoConfig = JSON.parse(topoConfigVar.value);
+          if (topoConfig.bridges) {
+            for (const bridge of topoConfig.bridges) {
+              nodeBridgeMap.set(bridge.name, { stableId: newBridgeId(), name: bridge.name });
+            }
+          }
+          if (topoConfig.interfaces) {
+            for (const iface of topoConfig.interfaces) {
+              if (iface.remote_host && iface.bridge) {
+                nodeRemoteMap.set(iface.remote_host, iface.bridge);
+              }
+            }
+          }
+        } catch { /* skip */ }
+      }
+      nodeBridgesMap.set(node.name, nodeBridgeMap);
+      remoteBridgeMap.set(node.name, nodeRemoteMap);
+    }
+
+    // 3. Rebuild node actors with bridges
+    const updatedNodeactors = exp.nodeactors.map(node => {
+      const existingBridges = (node.bridges || []).map(b => ({ ...b, id: newBridgeId() }));
+      const nodeBridgeMap = nodeBridgesMap.get(node.name);
+      if (!nodeBridgeMap) return node;
+
+      // Add new bridges that weren't in the original data
+      const updatedBridges = [...existingBridges];
+      for (const [bridgeName, info] of nodeBridgeMap) {
+        const existing = updatedBridges.find(b => b.name === bridgeName);
+        if (!existing) {
+          updatedBridges.push({ id: info.stableId, name: bridgeName, mtu: 1280 });
+        }
+      }
+
+      // Extract routes from MENTORED_TOPOLOGY_CONFIG
+      let updatedRoutes: Route[] = [];
+      for (const container of (node.containers || [])) {
+        const topoConfigVar = (container.env || []).find(e => e.name === 'MENTORED_TOPOLOGY_CONFIG');
+        if (!topoConfigVar) continue;
+        try {
+          const topoConfig = JSON.parse(topoConfigVar.value);
+          if (topoConfig.routes) {
+            updatedRoutes = topoConfig.routes.map((r: any) => ({
+              to: r.to,
+              via: r.via,
+              dev: r.dev,
+              metric: r.metric,
+              onlink: r.onlink,
+            }));
+            break;
+          }
+        } catch {
+          // skip
+        }
+      }
+
+      const result: NodeActor = {
+        ...node,
+        bridges: updatedBridges,
+        routes: updatedRoutes.length > 0 ? updatedRoutes : node.routes,
+      };
+      return result;
+    });
+
+    // 3. Reconstruct VXLAN edges using remoteBridgeMap for correct bridge lookups
+    const seenEdgeKeys = new Set<string>();
+    const edgeMap = new Map<string, VXLANEdge>();
+
+    for (const node of exp.nodeactors) {
+      const nodeRemoteMap = remoteBridgeMap.get(node.name);
+      const nodeBridgeMap = nodeBridgesMap.get(node.name);
+      if (!nodeRemoteMap || !nodeBridgeMap) continue;
+
+      for (const container of (node.containers || [])) {
+        const topoConfigVar = (container.env || []).find(e => e.name === 'MENTORED_TOPOLOGY_CONFIG');
+        if (!topoConfigVar) continue;
+        try {
+          const topoConfig = JSON.parse(topoConfigVar.value);
+          if (!topoConfig.interfaces) continue;
+
+          for (const iface of topoConfig.interfaces) {
+            const edgeVni = iface.vni;
+            const remoteHost = iface.remote_host;
+            const localBridgeName = iface.bridge || '';
+
+            if (!edgeVni || !remoteHost || !localBridgeName) continue;
+
+            // Deduplicate: A↔B tunnel and B↔A tunnel are the same edge
+            const [a, b] = node.name < remoteHost ? [node.name, remoteHost] : [remoteHost, node.name];
+            const edgeKey = `${a}|${b}|${edgeVni}`;
+            if (seenEdgeKeys.has(edgeKey)) continue;
+            seenEdgeKeys.add(edgeKey);
+
+            // Local bridge stable ID (this node's bridge for tunnel to remoteHost)
+            const localBridgeInfo = nodeBridgeMap.get(localBridgeName);
+            if (!localBridgeInfo) continue;
+
+            // Remote bridge: use remoteBridgeMap to find what bridge the remote node
+            // uses for tunnels BACK to this node (the correct bridge for this edge)
+            const remoteNodeRemoteMap = remoteBridgeMap.get(remoteHost);
+            const remoteBridgeName = remoteNodeRemoteMap?.get(node.name);
+            if (!remoteBridgeName) continue;
+
+            const remoteBridgeMapNode = nodeBridgesMap.get(remoteHost);
+            const remoteBridgeInfo = remoteBridgeMapNode?.get(remoteBridgeName);
+            if (!remoteBridgeInfo) continue;
+
+            // Assign source = alphabetically first node, target = second
+            const source = a;
+            const target = b;
+            let sourceBridgeId: string;
+            let targetBridgeId: string;
+
+            if (source === node.name) {
+              // current node is source
+              sourceBridgeId = localBridgeInfo.stableId;
+              targetBridgeId = remoteBridgeInfo.stableId;
+            } else {
+              // current node is target; other node is source
+              sourceBridgeId = remoteBridgeInfo.stableId;
+              targetBridgeId = localBridgeInfo.stableId;
+            }
+
+            const edgeId = `imported-${edgeVni}-${source}-${target}`;
+            edgeMap.set(edgeId, {
+              id: edgeId,
+              source,
+              target,
+              sourceBridgeId,
+              targetBridgeId,
+              vni: edgeVni,
+            });
+          }
+        } catch { /* skip */ }
+      }
+    }
+
+    // 4. Update state with everything
+    setState(prev => ({
+      ...prev,
+      experiment: { ...prev.experiment, nodeactors: updatedNodeactors },
+      vxlanEdges: Array.from(edgeMap.values()),
+    }));
+  }, []);
+
   const resetTopology = useCallback(() => {
     setState(defaultState);
   }, []);
@@ -388,6 +553,7 @@ export const useTopology = () => {
     setSelectedEdge,
     exportExperiment,
     importExperiment,
+    importExperimentWithEdges,
     resetTopology,
   };
 

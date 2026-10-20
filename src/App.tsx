@@ -7,6 +7,7 @@ import TopologyCanvas from './components/TopologyCanvas';
 import PropertiesPanel from './components/PropertiesPanel';
 import TopologyConfigPanel from './components/TopologyConfigPanel';
 import { experimentToYAML } from './utils/yamlGenerator';
+import { yamlToExperiment, extractTopologyConfig, extractRoutes } from './utils/yamlParser';
 import './App.css';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 
@@ -108,12 +109,12 @@ function App() {
   const handleImportYAML = () => {
     handleFileUpload((text) => {
       try {
-        const YAML = require('js-yaml');
-        const parsed = YAML.load(text) as any;
-        const experiment = parsed.Experiment || parsed;
-        if (experiment.name && experiment.nodeactors) {
-          topologyContext.importExperiment(experiment);
+        const parsed = yamlToExperiment(text);
+        if (!parsed) {
+          alert('Failed to parse YAML file: invalid format');
+          return;
         }
+        topologyContext.importExperimentWithEdges(parsed);
       } catch (err) {
         console.error('Failed to import YAML:', err);
         alert('Failed to import YAML file');
